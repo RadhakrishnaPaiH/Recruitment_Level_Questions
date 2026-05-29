@@ -1,0 +1,62 @@
+import heapq  # Import heap functions (priority queue support)
+
+# Input: number of food types
+n = int(input("Enter types of food(N):"))
+
+# Input: maximum number of meals that can be bought
+m = int(input("Enter maximum no. of meals you can buy(M):"))
+
+# List to store initial values (satisfaction/profit) of each food
+v = []
+
+# List to store decrease values after each purchase
+d = []
+
+# Read initial values for each food type
+for i in range(n):
+    v.append(int(input()))
+
+# Read decrement values for each food type
+for i in range(n):
+    d.append(int(input()))
+
+# Heap (priority queue) to always get the food with maximum current value
+heap = []
+
+# Push initial food values into heap
+# Store as negative because Python's heapq is a min-heap,
+# but we need max-heap behavior
+# Tuple format: (-current_value, food_index, purchase_count)
+for i in range(n):
+    heapq.heappush(heap, (-v[i], i, 1))
+
+# Variable to store total accumulated value
+ans = 0
+
+# Buy at most m meals
+for _ in range(m):
+
+    # Get food with highest current value
+    val, idx, cnt = heapq.heappop(heap)
+
+    # Convert back to positive value
+    val = -val
+
+    # If value becomes non-positive, stop purchasing
+    if val <= 0:
+        break
+
+    # Add current value to total answer
+    ans += val
+
+    # Calculate next value after one more purchase
+    # Formula:
+    # next value = original value - decrement * number_of_times_bought
+    next_val = v[idx] - d[idx] * cnt
+
+    # Push updated value back into heap
+    # Increase purchase count by 1
+    heapq.heappush(heap, (-next_val, idx, cnt + 1))
+
+# Print maximum total value obtained
+print(ans)
